@@ -1,0 +1,34 @@
+# Environment and local config
+.env
+.local
+
+# Temporary and generated files
+scratch
+*.sw[op]
+*.log
+.DS_Store
+node_modules
+dist
+.aider*
+.vite
+*.tsbuildinfo
+
+# pnpm-specific
+.pnpm-store/
+pnpm-debug.log
+
+# Python-related
+__pycache__
+
+# Jest and test-related
+.coverage
+.ruff_cache
+
+# IDE-specific
+.idea/
+.vscode/
+
+# Examples-related
+examples/**/package-lock.json
+examples/huggingface-dataset-factuality/.cache
+examples/redteam-dalle/images
