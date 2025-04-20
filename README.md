@@ -17,6 +17,7 @@ pnpm install
 # To Start the hot‑reload dev server
 pnpm dev
 ```
+### TO access the UI in the browser: http://localhost:3000
 
 ## What can you do?
 
