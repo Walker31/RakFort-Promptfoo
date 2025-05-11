@@ -3,7 +3,7 @@
 
 ```sh
 # clone the project into your local system
-git clone https://github.com/rakfortltd/RakFort-Promptfoo
+https://github.com/Walker31/RakFort-Promptfoo.git
 
 # open the repo
 cd RakFort-Promptfoo
