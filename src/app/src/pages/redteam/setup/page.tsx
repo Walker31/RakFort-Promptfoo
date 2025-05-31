@@ -42,6 +42,8 @@ import { useSetupState } from './hooks/useSetupState';
 import type { RedteamUITarget } from './types';
 import type { Config } from './types';
 import { generateOrderedYaml } from './utils/yamlHelpers';
+import Sidebar from '@app/components/sidebar';
+import { useUIStore } from '../../../stores/uiStore';
 import './page.css';
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
@@ -537,110 +539,27 @@ export default function RedTeamSetupPage() {
     });
   };
 
+  const toggleSidebar = useUIStore((state) => state.toggleSidebar);
+
   // --- JSX ---
   return (
     <Root>
       <Content>
-        <OuterSidebarContainer>
-          <InnerSidebarContainer>
-            <StatusSection>
-              <Typography className="configName">
-                {configName ? `Config: ${configName}` : 'New Configuration'}
-              </Typography>
-              {hasUnsavedChanges ? (
-                <div className="statusRow">
-                  <Typography className="unsavedChanges">
-                    <span>●</span> Unsaved changes
-                  </Typography>
-                  <Button
-                    className="saveButton"
-                    size="small"
-                    variant="outlined"
-                    color="warning"
-                    onClick={handleSaveConfig}
-                    disabled={!configName}
-                  >
-                    Save now
-                  </Button>
-                </div>
-              ) : (
-                configDate && (
-                  <Typography className="dateText" color="text.secondary" variant="body2">
-                    {new Date(configDate).toLocaleString()}
-                  </Typography>
-                )
-              )}
-            </StatusSection>
-            <TabsContainer>
-              <StyledTabs
-                orientation="vertical"
-                variant="scrollable"
-                value={value}
-                onChange={handleChange}
-              >
-                <StyledTab
-                  icon={<AppIcon />}
-                  iconPosition="start"
-                  label="Usage Details"
-                  {...a11yProps(0)}
-                />
-                <StyledTab
-                  icon={<TargetIcon />}
-                  iconPosition="start"
-                  label="Targets"
-                  {...a11yProps(1)}
-                />
-                <StyledTab
-                  icon={<PluginIcon />}
-                  iconPosition="start"
-                  label={`Plugins${config.plugins?.length ? ` (${config.plugins.length})` : ''}`}
-                  {...a11yProps(2)}
-                />
-                <StyledTab
-                  icon={<StrategyIcon />}
-                  iconPosition="start"
-                  label={`Strategies${config.strategies?.length ? ` (${config.strategies.length})` : ''}`}
-                  {...a11yProps(3)}
-                />
-                <StyledTab
-                  icon={<ReviewIcon />}
-                  iconPosition="start"
-                  label="Review"
-                  {...a11yProps(4)}
-                />
-              </StyledTabs>
-            </TabsContainer>
-            <SidebarButtons>
-              <SidebarButton
-                variant="text"
-                fullWidth
-                startIcon={<SaveIcon />}
-                onClick={() => setSaveDialogOpen(true)}
-              >
-                Save Config
-              </SidebarButton>
-              <SidebarButton
-                variant="text"
-                fullWidth
-                startIcon={<FolderOpenIcon />}
-                onClick={() => {
-                  loadConfigs();
-                  setLoadDialogOpen(true);
-                }}
-              >
-                Load Config
-              </SidebarButton>
-              <SidebarButton
-                variant="text"
-                fullWidth
-                startIcon={<RestartAltIcon />}
-                onClick={() => setResetDialogOpen(true)}
-              >
-                Reset Config
-              </SidebarButton>
-            </SidebarButtons>
-          </InnerSidebarContainer>
-        </OuterSidebarContainer>
+      <Sidebar
+        configName={configName}
+        configDate={configDate}
+        hasUnsavedChanges={hasUnsavedChanges}
+        onSave={handleSaveConfig}
+        onOpenSave={() => setSaveDialogOpen(true)}
+        onOpenLoad={() => { loadConfigs(); setLoadDialogOpen(true); }}
+        onOpenReset={() => setResetDialogOpen(true)}
+        pluginsCount={config.plugins?.length || 0}
+        strategiesCount={config.strategies?.length || 0}
+        value={value}
+        onChange={handleChange}
+        isOpen={true}
+        onClose={toggleSidebar}
+      />
         <TabContent>
           <CustomTabPanel value={value} index={0}>
             <Purpose onNext={handleNext} />
