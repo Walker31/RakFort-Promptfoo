@@ -3,6 +3,8 @@ import { Outlet } from 'react-router-dom';
 import Navigation from '@app/components/Navigation';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useUIStore } from '@app/stores/uiStore';
+import { Drawer } from './Drawer';
 
 const createAppTheme = (darkMode: boolean) =>
   createTheme({
@@ -238,6 +240,8 @@ export default function PageShell() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [darkMode, setDarkMode] = useState<boolean | null>(null);
 
+  const { isDrawerCollapsed } = useUIStore();
+
   useEffect(() => {
     // Initialize from localStorage, fallback to system preference
     const savedMode = localStorage.getItem('darkMode');
@@ -271,10 +275,20 @@ export default function PageShell() {
 
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
-      <Layout>
-        <Navigation darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
-        <Outlet />
-      </Layout>
+      <div className="h-screen flex flex-col overflow-hidden dark:bg-[#22103B]">
+        {/* Top Navbar */}
+        <Navigation  darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
+
+        <div className="flex flex-1 overflow-hidden">
+          {/* Sidebar Drawer */}
+          <Drawer collapsed={isDrawerCollapsed} />
+
+          {/* Main Content Area */}
+          <main className="flex-1 overflow-y-auto bg-background px-4 py-6">
+            <Outlet />
+          </main>
+        </div>
+      </div>
     </ThemeProvider>
   );
 }

@@ -106,7 +106,7 @@ const config: Config = {
       title: 'promptfoo',
       logo: {
         alt: 'promptfoo logo',
-        src: 'img/logo-panda.svg',
+        src: 'img/logo-panda.jpg',
       },
       items: [
         {

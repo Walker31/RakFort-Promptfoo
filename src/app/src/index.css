@@ -1,4 +1,7 @@
 /* This CSS is common to all pages */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
   box-sizing: border-box;
@@ -40,7 +43,7 @@
 /* Dark mode colors */
 [data-theme='dark'] {
   /* Keep synced with prefers-color-scheme above */
-  --background-color: #1a1a1a;
+  --background-color: #22103B;
   --text-color: #f0f0f0;
   --link-color: #6fcaff;
   --border-color: #444444;

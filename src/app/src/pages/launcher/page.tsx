@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logoPanda from '@app/assets/logo-panda.svg';
+import logoPanda from '@app/assets/logo-panda.jpg';
 import useApiConfig from '@app/stores/apiConfig';
 import { Terminal as TerminalIcon } from '@mui/icons-material';
 import LanguageIcon from '@mui/icons-material/Language';

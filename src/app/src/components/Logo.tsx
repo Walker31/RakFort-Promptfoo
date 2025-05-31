@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logoPanda from '@app/assets/logo-panda.svg';
+import logoPanda from '@app/assets/logo-panda.jpg';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
@@ -81,7 +81,7 @@ export default function Logo() {
     <Link to="/" style={{ textDecoration: 'none' }}>
       <LogoWrapper>
         <LogoIcon src={logoPanda} alt="Promptfoo Logo" />
-        <LogoText variant="h1">promptfoo</LogoText>
+        <LogoText variant="h1">Rakfort</LogoText>
       </LogoWrapper>
     </Link>
   );
