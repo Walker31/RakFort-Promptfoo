@@ -1,34 +1,16 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Outlet } from 'react-router-dom';
-import Navigation from '@app/components/Navigation';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useUIStore } from '@app/stores/uiStore';
 import { Drawer } from './Drawer';
+import Navigation from './Navigation.tsx';
 
+// Theme factory
 const createAppTheme = (darkMode: boolean) =>
   createTheme({
     typography: {
       fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      /*
-      // TODO(ian): Uncomment once we've standardized on Typography
-      h1: {
-        fontWeight: 700,
-        fontSize: '2.5rem',
-      },
-      h2: {
-        fontWeight: 600,
-        fontSize: '2rem',
-      },
-      h3: {
-        fontWeight: 600,
-        fontSize: '1.5rem',
-      },
-      h4: {
-        fontWeight: 600,
-        fontSize: '1.25rem',
-      },
-      */
       button: {
         textTransform: 'none',
         fontWeight: 500,
@@ -40,13 +22,13 @@ const createAppTheme = (darkMode: boolean) =>
     palette: {
       mode: darkMode ? 'dark' : 'light',
       primary: {
-        main: darkMode ? '#3b82f6' : '#2563eb', // Lighter blue for dark mode
+        main: darkMode ? '#3b82f6' : '#2563eb',
         light: darkMode ? '#60a5fa' : '#3b82f6',
         dark: darkMode ? '#2563eb' : '#1d4ed8',
         contrastText: '#ffffff',
       },
       secondary: {
-        main: '#8b5cf6', // Modern purple
+        main: '#8b5cf6',
         light: '#a78bfa',
         dark: '#7c3aed',
         contrastText: '#ffffff',
@@ -222,45 +204,38 @@ const createAppTheme = (darkMode: boolean) =>
             backgroundColor: darkMode ? '#404040' : '#cbd5e1',
           },
           thumb: {
-            backgroundColor: darkMode ? '#ffffff' : '#ffffff',
+            backgroundColor: '#ffffff',
           },
         },
       },
     },
-  });
-
-const lightTheme = createAppTheme(false);
-const darkTheme = createAppTheme(true);
-
-function Layout({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
-}
-
-export default function PageShell() {
+  });export default function PageShell() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [darkMode, setDarkMode] = useState<boolean | null>(null);
+  const darkMode = useUIStore((state) => state.darkMode);
+  const setDarkMode = useUIStore((state) => state.setDarkMode);
 
-  const { isDrawerCollapsed } = useUIStore();
+  // Extract all UI state needed for layout
+  const isDrawerCollapsed = useUIStore((state) => state.isDrawerCollapsed);
+  const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
+
+  // If you want to show the right sidebar only on certain routes, define showRightSidebar here:
+  // Example: show only on /redteam or /evals routes
+  const showRightSidebar = window.location.pathname.startsWith('/redteam') ||
+    window.location.pathname.startsWith('/evals');
+
+  const theme = createAppTheme(darkMode ?? prefersDarkMode);
 
   useEffect(() => {
-    // Initialize from localStorage, fallback to system preference
     const savedMode = localStorage.getItem('darkMode');
-    setDarkMode(savedMode === null ? prefersDarkMode : savedMode === 'true');
-  }, [prefersDarkMode]);
-
-  const toggleDarkMode = useCallback(() => {
-    setDarkMode((prevMode) => {
-      const newMode = !prevMode;
-      localStorage.setItem('darkMode', String(newMode));
-      return newMode;
-    });
-  }, []);
+    if (savedMode === null) {
+      setDarkMode(prefersDarkMode);
+    } else {
+      setDarkMode(savedMode === 'true');
+    }
+  }, [prefersDarkMode, setDarkMode]);
 
   useEffect(() => {
-    if (darkMode === null) {
-      return;
-    }
-
+    if (darkMode === null) return;
     if (darkMode) {
       document.documentElement.setAttribute('data-theme', 'dark');
     } else {
@@ -268,25 +243,41 @@ export default function PageShell() {
     }
   }, [darkMode]);
 
-  // Render null until darkMode is determined
+  const toggleDarkMode = useCallback(() => {
+    const newMode = darkMode === null ? true : !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem('darkMode', String(newMode));
+  }, [darkMode, setDarkMode]);
+
   if (darkMode === null) {
     return null;
   }
 
   return (
-    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+    <ThemeProvider theme={theme}>
       <div className="h-screen flex flex-col overflow-hidden dark:bg-[#22103B]">
         {/* Top Navbar */}
-        <Navigation  darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <Navigation darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
+        </div>
 
-        <div className="flex flex-1 overflow-hidden">
-          {/* Sidebar Drawer */}
-          <Drawer collapsed={isDrawerCollapsed} />
+        {/* Body below navbar */}
+        <div className="flex flex-1 pt-[64px] h-full overflow-hidden">
+          {/* Left Drawer */}
+          <div className={`${isDrawerCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+            <Drawer collapsed={isDrawerCollapsed} />
+          </div>
 
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-y-auto bg-background px-4 py-6">
-            <Outlet />
-          </main>
+          {/* Main content area */}
+          <div className="flex flex-1 h-full overflow-hidden">
+
+            {/* Scrollable Page Content */}
+            <main className="flex-1 overflow-y-auto min-h-0">
+              <div className="h-full w-full">
+                <Outlet />
+              </div>
+            </main>
+          </div>
         </div>
       </div>
     </ThemeProvider>

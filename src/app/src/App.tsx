@@ -44,21 +44,20 @@ const router = createBrowserRouter(
       )}
       <Route path="/" element={<PageShell />}>
        <Route element={<TelemetryTracker />}>
-  <Route index element={<Home />} />
-  <Route path="/datasets" element={<DatasetsPage />} />
-  <Route path="/eval" element={<EvalPage />} />
-  <Route path="/evals" element={<EvalsIndexPage />} />
-  <Route path="/eval/:evalId" element={<EvalPage />} />
-  <Route path="/progress" element={<Navigate to="/history" replace />} />
-  <Route path="/history" element={<HistoryPage />} />
-  <Route path="/prompts" element={<PromptsPage />} />
-  <Route path="/redteam" element={<Navigate to="/redteam/setup" replace />} />
-  <Route path="/redteam/setup" element={<RedteamSetupPage />} />
-  <Route path="/report" element={<ReportPage />} />
-  <Route path="/setup" element={<EvalCreatorPage />} />
-  <Route path="/login" element={<LoginPage />} />
-</Route>
-
+          <Route index element={<Home />} />
+          <Route path="/datasets" element={<DatasetsPage />} />
+          <Route path="/eval" element={<EvalPage />} />
+          <Route path="/evals" element={<EvalsIndexPage />} />
+          <Route path="/eval/:evalId" element={<EvalPage />} />
+          <Route path="/progress" element={<Navigate to="/history" replace />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/prompts" element={<PromptsPage />} />
+          <Route path="/redteam" element={<Navigate to="/redteam/setup" replace />} />
+          <Route path="/redteam/setup" element={<RedteamSetupPage />} />
+          <Route path="/report" element={<ReportPage />} />
+          <Route path="/setup" element={<EvalCreatorPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          </Route>
       </Route>
     </>,
   ),

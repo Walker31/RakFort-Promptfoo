@@ -1,14 +1,5 @@
 import React from 'react';
 import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material';
-import {
   Apps as AppIcon,
   Extension as PluginIcon,
   FolderOpen as FolderOpenIcon,
@@ -18,7 +9,7 @@ import {
   RestartAlt as RestartAltIcon,
   Save as SaveIcon,
   Close as CloseIcon,
-} from '@mui/material-icons';
+} from '@mui/icons-material';
 
 interface SidebarProps {
   configName: string;
@@ -52,301 +43,109 @@ const Sidebar: React.FC<SidebarProps> = ({
   onClose,
 }) => {
   const redteamTabs = [
-    { label: 'Usage Details', icon: <AppIcon /> },
-    { label: 'Targets', icon: <TargetIcon /> },
+    { label: 'Usage Details', icon: <AppIcon fontSize="small" /> },
+    { label: 'Targets', icon: <TargetIcon fontSize="small" /> },
     {
       label: `Plugins${pluginsCount ? ` (${pluginsCount})` : ''}`,
-      icon: <PluginIcon />,
+      icon: <PluginIcon fontSize="small" />,
     },
     {
       label: `Strategies${strategiesCount ? ` (${strategiesCount})` : ''}`,
-      icon: <StrategyIcon />,
+      icon: <StrategyIcon fontSize="small" />,
     },
-    { label: 'Review', icon: <ReviewIcon /> },
+    { label: 'Review', icon: <ReviewIcon fontSize="small" /> },
   ];
 
-  if (!isOpen) return null;
-
   return (
-    <Box
-      sx={{
-        position: 'fixed',
-        top: '96px', // top-24 = 6rem = 96px
-        right: '24px', // right-6 = 1.5rem = 24px
-        width: '300px',
-        maxHeight: '80vh',
-        zIndex: 50,
-        transition: 'all 0.5s ease',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-        borderRadius: '16px', // rounded-2xl
-        backdropFilter: 'blur(16px)',
-        backgroundColor: (theme) =>
-          theme.palette.mode === 'dark'
-            ? 'rgba(28, 28, 40, 0.6)'
-            : 'rgba(255, 255, 255, 0.7)',
-        border: (theme) =>
-          theme.palette.mode === 'dark'
-            ? '1px solid rgba(255, 255, 255, 0.1)'
-            : '1px solid rgba(0, 0, 0, 0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden'
-      }}
+    <div
+      className={`fixed top-24 right-6 z-50 shadow-xl rounded-2xl border border-gray-300 dark:border-white/10 
+      bg-white/70 dark:bg-[#1c1c28]/60 backdrop-blur-lg flex flex-col overflow-hidden transition-all duration-500
+      ${isOpen ? 'w-[300px]' : 'w-14'}`}
     >
       {/* Header */}
-      <Box 
-        sx={{
-          padding: '16px',
-          borderBottom: (theme) => 
-            theme.palette.mode === 'dark' 
-              ? '1px solid rgba(255, 255, 255, 0.1)' 
-              : '1px solid rgb(209, 213, 219)',
-          position: 'relative'
-        }}
-      >
-        <Typography
-          sx={{
-            fontWeight: 600,
-            color: (theme) =>
-              theme.palette.mode === 'dark'
-                ? '#fbbf24' // amber-400
-                : '#111827', // gray-900
-            textAlign: 'center'
-          }}
-        >
-          {configName ? `Config: ${configName}` : 'New Configuration'}
-        </Typography>
+      <div className="p-4 border-b border-gray-300 dark:border-white/10 relative flex items-center justify-center">
+        {isOpen ? (
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white text-center">
+            {configName ? `Config: ${configName}` : 'New Configuration'}
+          </h2>
+        ) : null}
         {onClose && (
-          <IconButton
+          <button
             onClick={onClose}
-            size="small"
-            sx={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              color: (theme) =>
-                theme.palette.mode === 'dark'
-                  ? '#d1d5db' // gray-300
-                  : '#374151' // gray-700
-            }}
+            className="absolute top-2 right-2 text-gray-700 dark:text-gray-300"
           >
             <CloseIcon fontSize="small" />
-          </IconButton>
+          </button>
         )}
-      </Box>
+      </div>
 
-      {/* Save warning or last saved timestamp */}
-      {hasUnsavedChanges ? (
-        <div 
-          style={{
-            padding: '8px 16px',
-            fontSize: '14px',
-            color: '#78350f', // yellow-900 for light mode
-            backgroundColor: '#fef3c7', // yellow-100 for light mode
-            ...(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && {
-              backgroundColor: 'rgba(146, 64, 14, 0.3)', // yellow-900/30 for dark mode
-              color: '#fcd34d' // yellow-300 for dark mode
-            })
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ fontSize: '18px' }}>●</span> Unsaved changes
-            </span>
-            <Button
-              size="small"
-              variant="outlined"
-              color="warning"
-              onClick={onSave}
-              disabled={!configName}
-              sx={{
-                padding: '4px 8px',
-                fontSize: '12px'
-              }}
-            >
-              Save
-            </Button>
-          </div>
+      {/* Unsaved warning or last saved */}
+      {isOpen && hasUnsavedChanges ? (
+        <div className="px-4 py-2 text-sm text-yellow-900 bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-300 flex items-center justify-between">
+          <span className="flex items-center gap-1">
+            <span className="text-lg">●</span> Unsaved changes
+          </span>
+          <button
+            onClick={onSave}
+            disabled={!configName}
+            className="text-xs px-2 py-1 border border-yellow-500 text-yellow-700 dark:text-yellow-300 dark:border-yellow-300 rounded hover:bg-yellow-200 dark:hover:bg-yellow-800"
+          >
+            Save
+          </button>
         </div>
-      ) : (
-        configDate && (
-          <div 
-            style={{
-              padding: '8px 16px',
-              fontSize: '12px',
-              color: '#374151' // gray-700 for light mode
-            }}
+      ) : isOpen && configDate ? (
+        <div className="px-4 py-2 text-[0.75rem] text-gray-700 dark:text-gray-400">
+          Last saved: {new Date(configDate).toLocaleString()}
+        </div>
+      ) : null}
+
+      {/* Tabs Section */}
+      <div className="flex-1 overflow-y-auto divide-y divide-gray-200 dark:divide-white/10">
+        {redteamTabs.map((tab, index) => (
+          <button
+            key={index}
+            onClick={(e) => onChange(e, index)}
+            className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-all
+              ${value === index ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}
+              ${!isOpen ? 'justify-center px-3' : ''}
+            `}
           >
-            Last saved: {new Date(configDate).toLocaleString()}
+            {tab.icon}
+            {isOpen && tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Footer */}
+      {isOpen && (
+        <>
+          <hr className="border-gray-300 dark:border-white/10" />
+          <div className="p-4 bg-white/60 dark:bg-white/5 backdrop-blur-md border-t border-gray-200 dark:border-white/10 flex flex-col gap-2">
+            <button
+              onClick={onOpenSave}
+              className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded"
+            >
+              <SaveIcon fontSize="small" />
+              Save Config
+            </button>
+            <button
+              onClick={onOpenLoad}
+              className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded"
+            >
+              <FolderOpenIcon fontSize="small" />
+              Load Config
+            </button>
+            <button
+              onClick={onOpenReset}
+              className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 rounded"
+            >
+              <RestartAltIcon fontSize="small" />
+              Reset Config
+            </button>
           </div>
-        )
+        </>
       )}
-
-      <Divider />
-
-      {/* Main Content - Tabs */}
-      <Box sx={{ flex: 1, overflowY: 'auto' }}>
-        <Tabs
-          orientation="vertical"
-          variant="scrollable"
-          value={value}
-          onChange={onChange}
-          sx={{ width: '100%' }}
-        >
-          {redteamTabs.map(({ label, icon }, idx) => (
-            <Tab
-              key={label}
-              icon={icon}
-              label={label}
-              sx={{
-                justifyContent: 'flex-start',
-                textAlign: 'left',
-                minHeight: '48px',
-                paddingX: '16px',
-                color: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? '#ffffff'
-                    : '#1f2937', // gray-800
-                borderBottom: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? '1px solid rgba(255, 255, 255, 0.1)'
-                    : '1px solid rgb(229, 231, 235)' // gray-200
-              }}
-            />
-          ))}
-        </Tabs>
-      </Box>
-
-      {/* Footer Actions */}
-      <Divider />
-      <Box 
-        sx={{
-          flexShrink: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          padding: '16px',
-          backgroundColor: (theme) =>
-            theme.palette.mode === 'dark'
-              ? 'rgba(255, 255, 255, 0.05)'
-              : 'rgba(255, 255, 255, 0.6)',
-          backdropFilter: 'blur(12px)',
-          borderTop: (theme) =>
-            theme.palette.mode === 'dark'
-              ? '1px solid rgba(255, 255, 255, 0.1)'
-              : '1px solid rgb(229, 231, 235)' // gray-200
-        }}
-      >
-        <Button
-          variant="text"
-          fullWidth
-          startIcon={
-            <SaveIcon 
-              sx={{ 
-                color: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? '#e5e7eb' // gray-200
-                    : '#4b5563' // gray-600
-              }} 
-            />
-          }
-          onClick={onOpenSave}
-          sx={{
-            justifyContent: 'flex-start',
-            fontSize: '14px',
-            fontWeight: 400,
-            '&:hover': {
-              backgroundColor: (theme) =>
-                theme.palette.mode === 'dark'
-                  ? '#1f2937' // gray-800
-                  : '#f3f4f6' // gray-100
-            }
-          }}
-        >
-          <span 
-            style={{ 
-              color: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches 
-                ? '#e5e7eb' // gray-200 for dark mode
-                : '#374151' // gray-700 for light mode
-            }}
-          >
-            Save Config
-          </span>
-        </Button>
-        <Button
-          variant="text"
-          fullWidth
-          startIcon={
-            <FolderOpenIcon 
-              sx={{ 
-                color: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? '#e5e7eb' // gray-200
-                    : '#4b5563' // gray-600
-              }} 
-            />
-          }
-          onClick={onOpenLoad}
-          sx={{
-            justifyContent: 'flex-start',
-            fontSize: '14px',
-            fontWeight: 400,
-            '&:hover': {
-              backgroundColor: (theme) =>
-                theme.palette.mode === 'dark'
-                  ? '#1f2937' // gray-800
-                  : '#f3f4f6' // gray-100
-            }
-          }}
-        >
-          <span 
-            style={{ 
-              color: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches 
-                ? '#e5e7eb' // gray-200 for dark mode
-                : '#374151' // gray-700 for light mode
-            }}
-          >
-            Load Config
-          </span>
-        </Button>
-        <Button
-          variant="text"
-          fullWidth
-          startIcon={
-            <RestartAltIcon 
-              sx={{ 
-                color: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? '#e5e7eb' // gray-200
-                    : '#4b5563' // gray-600
-              }} 
-            />
-          }
-          onClick={onOpenReset}
-          sx={{
-            justifyContent: 'flex-start',
-            fontSize: '14px',
-            fontWeight: 400,
-            '&:hover': {
-              backgroundColor: (theme) =>
-                theme.palette.mode === 'dark'
-                  ? '#1f2937' // gray-800
-                  : '#f3f4f6' // gray-100
-            }
-          }}
-        >
-          <span 
-            style={{ 
-              color: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches 
-                ? '#e5e7eb' // gray-200 for dark mode
-                : '#374151' // gray-700 for light mode
-            }}
-          >
-            Reset Config
-          </span>
-        </Button>
-      </Box>
-    </Box>
+    </div>
   );
 };
 
