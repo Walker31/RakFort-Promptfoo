@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useMemo } from "react";
 import { navbarLinks } from "../constants/index";
 import { NavLink } from "react-router-dom";
 
@@ -17,56 +17,89 @@ interface DrawerProps {
   collapsed?: boolean;
 }
 
-export const Drawer = forwardRef<HTMLElement, DrawerProps>(({ collapsed = false }, ref) => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
+interface DrawerNavLinkProps extends NavbarLinkItem {
+  collapsed: boolean;
+  linkBaseStyle: React.CSSProperties;
+  collapsedLinkStyle: React.CSSProperties;
+  expandedLinkStyle: React.CSSProperties;
+  activeLinkStyle: React.CSSProperties;
+  drawerLabelStyle: React.CSSProperties;
+}
 
-  const drawerStyle: React.CSSProperties = {
+const DrawerNavLink = React.memo(({
+  label,
+  path,
+  icon: Icon,
+  collapsed,
+  linkBaseStyle,
+  collapsedLinkStyle,
+  expandedLinkStyle,
+  activeLinkStyle,
+  drawerLabelStyle,
+}: DrawerNavLinkProps) => (
+  <NavLink
+    key={label}
+    to={path}
+    style={({ isActive }) => ({
+      ...linkBaseStyle,
+      ...(collapsed ? collapsedLinkStyle : expandedLinkStyle),
+      ...(isActive ? activeLinkStyle : {}),
+    })}
+  >
+    <Icon size={22} />
+    {!collapsed && <span style={drawerLabelStyle}>{label}</span>}
+  </NavLink>
+));
+
+export const Drawer = forwardRef<HTMLElement, DrawerProps>(({ collapsed = false }, ref) => {
+  // Memoized styles
+  const drawerStyle = useMemo<React.CSSProperties>(() => ({
     position: "fixed",
     zIndex: 100,
     height: "100%",
     display: "flex",
     flexDirection: "column",
     overflowX: "hidden",
-    backgroundColor: "#f5f3ff",
-    color: "#1a1a1a",
-    transition: "width 300ms, left 300ms, background-color 150ms, border 150ms",
+    backgroundColor: "#271243",
+    color: "#e0e7ef",
+    transition: "width 300ms, background-color 150ms, border 150ms",
     paddingLeft: 0,
     paddingRight: 0,
-    left: collapsed ? "-100%" : "0",
+    left: "0",
     width: collapsed ? 70 : 240,
-  };
+  }), [collapsed]);
 
-  const drawerContentStyle: React.CSSProperties = {
+  const drawerContentStyle = useMemo<React.CSSProperties>(() => ({
     display: "flex",
     flexDirection: "column",
     gap: "1rem",
     overflowY: "auto",
     padding: "12px",
     width: "100%",
-  };
+  }), []);
 
-  const drawerSectionStyle: React.CSSProperties = {
+  const drawerSectionStyle = useMemo<React.CSSProperties>(() => ({
     display: "flex",
     flexDirection: "column",
     gap: "4px",
     width: "100%",
-  };
+  }), []);
 
-  const drawerDividerStyle: React.CSSProperties = {
+  const drawerDividerStyle = useMemo<React.CSSProperties>(() => ({
     width: "100%",
-    border: "1px solid #94a3b8", // slate-300
+    border: "1px solid #94a3b8",
     marginBottom: "0.5rem",
-  };
+  }), []);
 
-  const drawerTitleStyle: React.CSSProperties = {
+  const drawerTitleStyle = useMemo<React.CSSProperties>(() => ({
     fontSize: "0.75rem",
     textTransform: "uppercase",
     fontWeight: 600,
-    color: "#64748b", // slate-500
+    color: "#a3aed6",
     paddingLeft: "8px",
-  };
+  }), []);
 
-  const linkBaseStyle: React.CSSProperties = {
+  const linkBaseStyle = useMemo<React.CSSProperties>(() => ({
     display: "flex",
     alignItems: "center",
     gap: "12px",
@@ -74,50 +107,47 @@ export const Drawer = forwardRef<HTMLElement, DrawerProps>(({ collapsed = false 
     borderRadius: "6px",
     textDecoration: "none",
     transition: "background-color 0.2s",
-    color: "#334155", // slate-700
-  };
-
-  const activeLinkStyle: React.CSSProperties = {
-    backgroundColor: "#c4b5fd", // purple-300
     color: "white",
-  };
+  }), []);
 
-  const collapsedLinkStyle: React.CSSProperties = {
+  const activeLinkStyle = useMemo<React.CSSProperties>(() => ({
+    backgroundColor: "#c4b5fd",
+    color: "#271243",
+  }), []);
+
+  const collapsedLinkStyle = useMemo<React.CSSProperties>(() => ({
     justifyContent: "center",
     width: 45,
-  };
+  }), []);
 
-  const expandedLinkStyle: React.CSSProperties = {
+  const expandedLinkStyle = useMemo<React.CSSProperties>(() => ({
     width: "100%",
-  };
+  }), []);
 
-  const drawerLabelStyle: React.CSSProperties = {
+  const drawerLabelStyle = useMemo<React.CSSProperties>(() => ({
     whiteSpace: "nowrap",
     fontSize: "0.875rem",
     fontWeight: 500,
-  };
+  }), []);
 
   return (
-    <aside ref={ref} style={drawerStyle}>
+    <aside ref={ref} style={drawerStyle} aria-label="Sidebar">
       <div style={drawerContentStyle}>
         {(navbarLinks as NavbarLinkGroup[]).map((navbarLink, index) => (
           <nav key={navbarLink.title} style={drawerSectionStyle}>
             {index !== 0 && <hr style={drawerDividerStyle} />}
             {!collapsed && <p style={drawerTitleStyle}>{navbarLink.title}</p>}
-
-            {navbarLink.links.map(({ label, path, icon: Icon }) => (
-              <NavLink
-                key={label}
-                to={path}
-                style={({ isActive }) => ({
-                  ...linkBaseStyle,
-                  ...(collapsed ? collapsedLinkStyle : expandedLinkStyle),
-                  ...(isActive ? activeLinkStyle : {}),
-                })}
-              >
-                <Icon size={22} />
-                {!collapsed && <span style={drawerLabelStyle}>{label}</span>}
-              </NavLink>
+            {navbarLink.links.map((link) => (
+              <DrawerNavLink
+                key={link.label}
+                {...link}
+                collapsed={collapsed}
+                linkBaseStyle={linkBaseStyle}
+                collapsedLinkStyle={collapsedLinkStyle}
+                expandedLinkStyle={expandedLinkStyle}
+                activeLinkStyle={activeLinkStyle}
+                drawerLabelStyle={drawerLabelStyle}
+              />
             ))}
           </nav>
         ))}

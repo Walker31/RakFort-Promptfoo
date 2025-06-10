@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import EngineeringIcon from '@mui/icons-material/Engineering';
@@ -36,7 +36,7 @@ const StyledAppBar = styled(AppBar)({
   boxShadow: 'none',
 });
 
-function NavLink({ href, label }: { href: string; label: string }) {
+const NavLink = React.memo(function NavLink({ href, label }: { href: string; label: string }) {
   const location = useLocation();
   const isActive = location.pathname.startsWith(href);
 
@@ -46,22 +46,24 @@ function NavLink({ href, label }: { href: string; label: string }) {
       className={`px-3 py-1 rounded text-sm sm:text-base
         ${isActive ? 'font-bold text-white bg-gray-700 dark:bg-gray-800' : 'text-gray-300 hover:underline hover:text-gray-100'}
       `}
+      aria-current={isActive ? 'page' : undefined}
     >
       {label}
     </Link>
   );
-}
+});
 
-function CreateDropdown() {
+const CreateDropdown = React.memo(function CreateDropdown() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const location = useLocation();
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+  const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget), []);
+  const handleClose = useCallback(() => setAnchorEl(null), []);
 
-  const isActive = ['/setup', '/redteam/setup'].some((route) =>
-    location.pathname.startsWith(route),
+  const isActive = useMemo(() =>
+    ['/setup', '/redteam/setup'].some((route) => location.pathname.startsWith(route)),
+    [location.pathname]
   );
 
   return (
@@ -73,6 +75,8 @@ function CreateDropdown() {
           ${isActive ? 'bg-gray-50 dark:bg-gray-800' : ''}
           hover:bg-gray-700 dark:hover:bg-gray-800
         `}
+        aria-haspopup="menu"
+        aria-expanded={open}
       >
         <div className='text-gray-800 dark:text-white'>Create</div>
       </NavButton>
@@ -111,7 +115,7 @@ function CreateDropdown() {
       </Menu>
     </div>
   );
-}
+});
 
 export default function Navigation({
   darkMode,
@@ -125,11 +129,13 @@ export default function Navigation({
   const { isNavbarVisible, isDrawerCollapsed, toggleDrawer, toggleSidebar } = useUIStore();
   const location = useLocation();
 
-  const handleModalToggle = () => setShowInfoModal((prev) => !prev);
-  const handleApiSettingsModalToggle = () => setShowApiSettingsModal((prev) => !prev);
+  const handleModalToggle = useCallback(() => setShowInfoModal((prev) => !prev), []);
+  const handleApiSettingsModalToggle = useCallback(() => setShowApiSettingsModal((prev) => !prev), []);
 
-  const showSidebarButton =
-    location.pathname.startsWith('/redteam') || location.pathname.startsWith('/evals');
+  const showSidebarButton = useMemo(
+    () => location.pathname.startsWith('/redteam') || location.pathname.startsWith('/evals'),
+    [location.pathname]
+  );
 
   if (!isNavbarVisible) return null;
 
@@ -147,6 +153,7 @@ export default function Navigation({
               onClick={toggleDrawer}
               className="text-gray-700 dark:!text-gray-50"
               title="Toggle Drawer"
+              aria-label="Toggle Drawer"
             >
               <KeyboardDoubleArrowRightIcon className={isDrawerCollapsed ? '' : 'rotate-180'} />
             </IconButton>
@@ -167,6 +174,7 @@ export default function Navigation({
             <IconButton
               onClick={handleModalToggle}
               className="hover:bg-gray-200 dark:hover:bg-gray-700"
+              aria-label="Show Info"
             >
               <InfoIcon className="text-gray-800 dark:text-white" />
             </IconButton>
@@ -176,6 +184,7 @@ export default function Navigation({
                 <IconButton
                   onClick={handleApiSettingsModalToggle}
                   className="hover:bg-gray-200 dark:hover:bg-gray-700"
+                  aria-label="API and Sharing Settings"
                 >
                   <EngineeringIcon className="text-gray-800 dark:text-white" />
                 </IconButton>
@@ -189,6 +198,7 @@ export default function Navigation({
                 onClick={toggleSidebar}
                 className="text-gray-700 dark:!text-gray-50"
                 title="Toggle Sidebar"
+                aria-label="Toggle Sidebar"
               >
                 <MenuIcon />
               </IconButton>
