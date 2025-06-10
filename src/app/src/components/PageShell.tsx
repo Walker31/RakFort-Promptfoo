@@ -262,7 +262,7 @@ const createAppTheme = (darkMode: boolean) =>
         </div>
 
         {/* Body below navbar */}
-        <div className="flex flex-1 pt-[64px] h-full overflow-hidden">
+        <div className="flex flex-1 pt-[64px] h-full">
           {/* Left Drawer */}
           <div className={`${isDrawerCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
             <Drawer collapsed={isDrawerCollapsed} />
