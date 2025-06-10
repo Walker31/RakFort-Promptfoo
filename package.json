@@ -165,11 +165,14 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.0",
+    "vite": "^6.3.5",
     "zod-to-json-schema": "^3.24.5"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "@apidevtools/json-schema-ref-parser": "^12.0.2",
+    "@docusaurus/plugin-content-blog": "3.8.0",
+    "@docusaurus/theme-common": "3.8.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@googleapis/sheets": "^9.8.0",
@@ -211,6 +214,8 @@
     "nunjucks": "^3.2.4",
     "openai": "^4.104.0",
     "opener": "^1.5.2",
+    "pnpm": "^10.12.1",
+    "prismjs": "^1.30.0",
     "proxy-agent": "^6.5.0",
     "python-shell": "^5.0.0",
     "replicate": "^0.34.1",

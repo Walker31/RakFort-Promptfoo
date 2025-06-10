@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Apps as AppIcon,
   Extension as PluginIcon,
@@ -27,7 +27,30 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({
+interface TabButtonProps {
+  tab: { label: string; icon: React.ReactNode };
+  index: number;
+  isActive: boolean;
+  isOpen: boolean;
+  onChange: (event: React.SyntheticEvent, newValue: number) => void;
+}
+
+const TabButton = React.memo(({ tab, index, isActive, isOpen, onChange }: TabButtonProps) => (
+  <button
+    key={index}
+    onClick={(e) => onChange(e, index)}
+    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-all
+      ${isActive ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}
+      ${!isOpen ? 'justify-center px-3' : ''}
+    `}
+    aria-current={isActive ? 'page' : undefined}
+  >
+    {tab.icon}
+    {isOpen && tab.label}
+  </button>
+));
+
+const Sidebar: React.FC<SidebarProps> = React.memo(({
   configName,
   configDate,
   hasUnsavedChanges,
@@ -42,7 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   isOpen = true,
   onClose,
 }) => {
-  const redteamTabs = [
+  // Memoize the tabs array
+  const redteamTabs = useMemo(() => [
     { label: 'Usage Details', icon: <AppIcon fontSize="small" /> },
     { label: 'Targets', icon: <TargetIcon fontSize="small" /> },
     {
@@ -54,25 +78,27 @@ const Sidebar: React.FC<SidebarProps> = ({
       icon: <StrategyIcon fontSize="small" />,
     },
     { label: 'Review', icon: <ReviewIcon fontSize="small" /> },
-  ];
+  ], [pluginsCount, strategiesCount]);
 
   return (
     <div
       className={`fixed top-24 right-6 z-50 shadow-xl rounded-2xl border border-gray-300 dark:border-white/10 
       bg-white/70 dark:bg-[#1c1c28]/60 backdrop-blur-lg flex flex-col overflow-hidden transition-all duration-500
       ${isOpen ? 'w-[300px]' : 'w-14'}`}
+      aria-label="Sidebar"
     >
       {/* Header */}
       <div className="p-4 border-b border-gray-300 dark:border-white/10 relative flex items-center justify-center">
-        {isOpen ? (
+        {isOpen && (
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white text-center">
             {configName ? `Config: ${configName}` : 'New Configuration'}
           </h2>
-        ) : null}
+        )}
         {onClose && (
           <button
             onClick={onClose}
             className="absolute top-2 right-2 text-gray-700 dark:text-gray-300"
+            aria-label="Close Sidebar"
           >
             <CloseIcon fontSize="small" />
           </button>
@@ -102,17 +128,14 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Tabs Section */}
       <div className="flex-1 overflow-y-auto divide-y divide-gray-200 dark:divide-white/10">
         {redteamTabs.map((tab, index) => (
-          <button
+          <TabButton
             key={index}
-            onClick={(e) => onChange(e, index)}
-            className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-all
-              ${value === index ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}
-              ${!isOpen ? 'justify-center px-3' : ''}
-            `}
-          >
-            {tab.icon}
-            {isOpen && tab.label}
-          </button>
+            tab={tab}
+            index={index}
+            isActive={value === index}
+            isOpen={isOpen}
+            onChange={onChange}
+          />
         ))}
       </div>
 
@@ -147,6 +170,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       )}
     </div>
   );
-};
+});
 
+Sidebar.displayName = "Sidebar";
 export default Sidebar;
