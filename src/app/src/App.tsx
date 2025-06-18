@@ -22,6 +22,7 @@ import PromptsPage from './pages/prompts/page';
 import ReportPage from './pages/redteam/report/page';
 import RedteamSetupPage from './pages/redteam/setup/page';
 import Home from './Home/Home.';
+import Dashboard from './pages/dashboard/main';
 
 const basename = import.meta.env.VITE_PUBLIC_BASENAME || '';
 
@@ -44,6 +45,7 @@ const router = createBrowserRouter(
       )}
       <Route path="/" element={<PageShell />}>
        <Route element={<TelemetryTracker />}>
+       <Route path='/dashboard' element={<Dashboard/>}/>
           <Route index element={<Home />} />
           <Route path="/datasets" element={<DatasetsPage />} />
           <Route path="/eval" element={<EvalPage />} />

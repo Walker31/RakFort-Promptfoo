@@ -55,10 +55,10 @@
   --insert-highlight-color: #4f8a34;
   --delete-highlight-color: #8a3434;
   --prompt-highlight-color: #67605a;
-  --textarea-background-color: #2d2d2d;
+  --textarea-background-color: #2B1449;
   --textarea-color: #fff;
   --search-highlight-color: #ffff00;
-  --search-text-color: #404040;
+  --search-text-color: #2B1449;
 }
 
 html {
